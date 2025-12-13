@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">IT Companies</string>
+    <string name="company_logo">Company logo</string>
+    <string name="services">Services</string>
+    <string name="call_company">Appeler l’entreprise</string>
+    <string name="see_website">Voir le site web</string>
+</resources>
