@@ -1,14 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Couleurs de base -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <!-- Couleurs de marque (restent les mêmes) -->
+    <!-- Couleurs de marque -->
     <color name="brand_primary">#6366F1</color>
+    <color name="brand_primary_light">#312E81</color>
     <color name="brand_on_primary">#FFFFFF</color>
     <color name="brand_secondary">#34D399</color>
-    <color name="brand_tertiary">#38BDF8</color>
+    <color name="brand_tertiary">#0EA5E9</color>
+    
+    <!-- Couleurs Admin -->
+    <color name="admin_color">#FFB74D</color>
+    <color name="admin_bg_light">#3E2723</color>
     
     <!-- Couleurs de surface (mode sombre) -->
     <color name="surface">#1F2937</color>
@@ -28,13 +33,13 @@
     <color name="text_primary">#F9FAFB</color>
     <color name="text_secondary">#9CA3AF</color>
     
-    <!-- Dégradé d'accueil -->
+    <!-- Degrades accueil -->
     <color name="grad_start">#0F172A</color>
     <color name="grad_end">#1E293B</color>
     
-    <!-- Anciennes couleurs pour compatibilité -->
+    <!-- Anciennes couleurs pour compatibilite -->
     <color name="ti_hint">#99FFFFFF</color>
-    <color name="app_purple">#818CF8</color>
-    <color name="app_purple_dark">#6366F1</color>
-    <color name="app_background">#111827</color>
+    <color name="app_purple">#9575CD</color>
+    <color name="app_purple_dark">#7E57C2</color>
+    <color name="app_background">#121212</color>
 </resources>

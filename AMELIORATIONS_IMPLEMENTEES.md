@@ -1,5 +1,45 @@
 # 🚀 Améliorations Implémentées - IT Companies Android App
 
+## ✅ Phase 4.2 (Interface Login Séparée) - COMPLÈTE
+
+### 🔐 Onglets de Connexion Admin/Client
+
+**Fichiers modifiés:**
+
+- `activity_main.xml` - Ajout des onglets TabLayout
+- `MainActivity.java` - Gestion des modes de connexion
+
+**Nouvelles fonctionnalités:**
+
+| Élément    | Description                                   |
+| ---------- | --------------------------------------------- |
+| TabLayout  | Onglets "👤 Client" et "👨‍💼 Admin"             |
+| Indicateur | Bandeau coloré indiquant le mode actuel       |
+| Carte info | Message explicatif selon le mode              |
+| Validation | Vérifie que le rôle correspond au mode choisi |
+
+**Comportement:**
+
+- **Mode Client (par défaut)**: Affiche "Pas de compte? S'inscrire"
+- **Mode Admin**: Cache le lien d'inscription, affiche aide admin
+- Un client ne peut pas se connecter en mode Admin
+- Un admin qui se connecte en mode Client est automatiquement redirigé
+
+**Fichiers créés:**
+
+- `ic_email.xml` - Icône email
+- `ic_lock.xml` - Icône cadenas
+- `ic_person.xml` - Icône personne
+- `ic_admin.xml` - Icône administrateur
+
+**Couleurs ajoutées:**
+
+- `brand_primary_light` - Fond clair pour mode client
+- `admin_color` - Couleur texte admin (orange)
+- `admin_bg_light` - Fond clair pour mode admin
+
+---
+
 ## ✅ Phase 1 (Priorité Haute) - COMPLÈTE
 
 ### 1. 🔐 Validation du Mot de Passe Fort
@@ -664,45 +704,284 @@ public static void addNotification(Context context,
 
 ---
 
-## 🎉 Application Complète !
+## ✅ Phase 4.1 (Système Admin/Client) - COMPLÈTE
+
+### 1. 👥 Système de Rôles Utilisateurs
+
+**Fichier modifié:** `UserDatabaseHelper.java`
+
+**Modifications:**
+
+- Version de la base de données: 1 → 2
+- Nouvelle colonne `role` (admin/client)
+- Compte admin par défaut:
+  - Email: `admin@itcompanies.com`
+  - Mot de passe: `Admin@123`
+  - Rôle: `admin`
+- Nouveaux utilisateurs créés avec rôle `client` par défaut
+
+**Nouvelles méthodes:**
+
+```java
+getUserRole(String email)          // Récupère le rôle d'un utilisateur
+getUsername(String email)          // Récupère le nom d'utilisateur
+isAdmin(String email)              // Vérifie si l'utilisateur est admin
+updatePassword(String email, pwd)  // Met à jour le mot de passe
+deleteUser(String email)           // Supprime un utilisateur
+```
+
+---
+
+### 2. 🔐 Gestion de Session avec Rôle
+
+**Fichier modifié:** `SessionManager.java`
+
+**Nouvelles fonctionnalités:**
+
+- Stockage du rôle dans la session
+- Méthode `createLoginSession(email, username, role)` étendue
+- Méthodes d'accès: `getUserRole()`, `isAdmin()`
+
+**Flux de connexion:**
+
+```
+Login → Vérification credentials → Récupération rôle
+      → Création session avec rôle → Redirection basée sur rôle
+```
+
+---
+
+### 3. 👨‍💼 Interface Administrateur (AdminDashboardActivity)
+
+**Nouveaux fichiers:**
+
+- `AdminDashboardActivity.java` - Dashboard administrateur
+- `activity_admin_dashboard.xml` - Layout du dashboard
+
+**Fonctionnalités du Dashboard:**
+
+| Section      | Élément               | Description                     |
+| ------------ | --------------------- | ------------------------------- |
+| Header       | Navigation Drawer     | Menu latéral avec profil admin  |
+| Header       | Message de bienvenue  | "Bienvenue, Admin" personnalisé |
+| Statistiques | Total Entreprises     | Compte des entreprises en BD    |
+| Statistiques | Favoris               | Nombre d'entreprises favorites  |
+| Actions      | Gérer les entreprises | Ouvre CompaniesActivity (CRUD)  |
+| Actions      | Ajouter entreprise    | Ouvre AddUpdateCompanyActivity  |
+| Actions      | Voir statistiques     | Affiche stats détaillées        |
+| Actions      | Paramètres            | Ouvre SettingsActivity          |
+
+**Code clé:**
+
+```java
+// AdminDashboardActivity.java
+private void loadStatistics() {
+    int totalCompanies = dbHelper.getAllCompanies().size();
+    int favoriteCount = dbHelper.getFavoriteCompanies().size();
+
+    tvTotalCompanies.setText(String.valueOf(totalCompanies));
+    tvFavoriteCount.setText(String.valueOf(favoriteCount));
+}
+```
+
+---
+
+### 4. 👤 Interface Client (ClientHomeActivity)
+
+**Nouveaux fichiers:**
+
+- `ClientHomeActivity.java` - Interface client
+- `activity_client_home.xml` - Layout client
+- `ClientCompanyAdapter.java` - Adaptateur personnalisé
+- `item_client_company.xml` - Item avec boutons d'action
+
+**Fonctionnalités Client:**
+
+| Fonctionnalité       | Description                               |
+| -------------------- | ----------------------------------------- |
+| 🔍 Recherche         | Barre de recherche en temps réel          |
+| 📋 Liste entreprises | Affichage des entreprises (lecture seule) |
+| 📞 Appeler           | Lance l'appel téléphonique                |
+| 🌐 Site web          | Ouvre le navigateur                       |
+| ✉️ Email             | Ouvre le client email                     |
+| ⭐ Favoris           | Ajouter/retirer des favoris               |
+| 🔄 Pull to Refresh   | Actualiser la liste                       |
+
+**Boutons d'action dans item_client_company:**
+
+```xml
+<LinearLayout android:orientation="horizontal">
+    <Button android:text="📞 Appeler" />
+    <Button android:text="🌐 Site" />
+    <Button android:text="✉️ Email" />
+    <ImageButton android:src="@drawable/ic_favorite_border" />
+</LinearLayout>
+```
+
+**Actions de contact:**
+
+```java
+// Appeler
+Intent callIntent = new Intent(Intent.ACTION_DIAL);
+callIntent.setData(Uri.parse("tel:" + company.getPhone()));
+
+// Site web
+Intent webIntent = new Intent(Intent.ACTION_VIEW);
+webIntent.setData(Uri.parse(company.getWebsite()));
+
+// Email (utilise le numéro comme fallback si pas d'email dans le modèle)
+Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+emailIntent.setData(Uri.parse("mailto:contact@" + domain));
+```
+
+---
+
+### 5. 🔄 Redirection Basée sur le Rôle
+
+**Fichiers modifiés:**
+
+- `MainActivity.java` - Redirection après login
+- `SplashActivity.java` - Redirection après splash
+
+**Logique de redirection:**
+
+```java
+String role = sessionManager.getUserRole();
+if ("admin".equals(role)) {
+    startActivity(new Intent(this, AdminDashboardActivity.class));
+} else {
+    startActivity(new Intent(this, ClientHomeActivity.class));
+}
+```
+
+**Flux complet:**
+
+```
+SplashActivity (2s)
+    ├── Session valide?
+    │   ├── Oui → Vérifier rôle
+    │   │   ├── Admin → AdminDashboardActivity
+    │   │   └── Client → ClientHomeActivity
+    │   └── Non → MainActivity (Login)
+    └── Login réussi → Créer session avec rôle → Redirection
+```
+
+---
+
+### 6. 🔒 Permissions Android
+
+**AndroidManifest.xml modifié:**
+
+```xml
+<uses-permission android:name="android.permission.CALL_PHONE" />
+```
+
+**Activités déclarées:**
+
+```xml
+<activity android:name=".AdminDashboardActivity" android:exported="false" />
+<activity android:name=".ClientHomeActivity" android:exported="false" />
+```
+
+---
+
+## 📁 Nouveaux Fichiers Phase 4.1
+
+| Fichier                        | Type   | Description                 |
+| ------------------------------ | ------ | --------------------------- |
+| `AdminDashboardActivity.java`  | Java   | Dashboard administrateur    |
+| `ClientHomeActivity.java`      | Java   | Interface client            |
+| `ClientCompanyAdapter.java`    | Java   | Adaptateur pour vue client  |
+| `activity_admin_dashboard.xml` | Layout | UI dashboard admin          |
+| `activity_client_home.xml`     | Layout | UI client                   |
+| `item_client_company.xml`      | Layout | Item entreprise pour client |
+
+---
+
+## 📊 Tableau Comparatif Admin vs Client
+
+| Fonctionnalité         | Admin 👨‍💼 | Client 👤 |
+| ---------------------- | :------: | :-------: |
+| Voir liste entreprises |    ✅    |    ✅     |
+| Rechercher             |    ✅    |    ✅     |
+| Voir détails           |    ✅    |    ✅     |
+| Ajouter entreprise     |    ✅    |    ❌     |
+| Modifier entreprise    |    ✅    |    ❌     |
+| Supprimer entreprise   |    ✅    |    ❌     |
+| Gérer favoris          |    ✅    |    ✅     |
+| Appeler directement    |    ✅    |    ✅     |
+| Ouvrir site web        |    ✅    |    ✅     |
+| Envoyer email          |    ✅    |    ✅     |
+| Dashboard statistiques |    ✅    |    ❌     |
+| Export PDF             |    ✅    |    ❌     |
+| Paramètres complets    |    ✅    | ⚠️ Limité |
+
+---
+
+## 🧪 Tests Phase 4.1
+
+### Test 1: Compte Admin
+
+1. Lancer l'application
+2. Se connecter avec:
+   - Email: `admin@itcompanies.com`
+   - Mot de passe: `Admin@123`
+3. Vérifier → Redirection vers AdminDashboardActivity
+4. Vérifier → Accès complet CRUD
+
+### Test 2: Compte Client
+
+1. Créer un nouveau compte (rôle client par défaut)
+2. Se connecter avec le nouveau compte
+3. Vérifier → Redirection vers ClientHomeActivity
+4. Vérifier → Pas de boutons Ajouter/Modifier/Supprimer
+5. Vérifier → Boutons Appeler, Site, Email fonctionnels
+
+### Test 3: Actions Client
+
+1. En tant que client, sur une entreprise:
+   - Cliquer "📞 Appeler" → Ouvre le dialer
+   - Cliquer "🌐 Site" → Ouvre le navigateur
+   - Cliquer "✉️ Email" → Ouvre l'app email
+   - Cliquer ⭐ → Ajoute/retire des favoris
+
+### Test 4: Session et Rôle
+
+1. Se connecter en admin
+2. Fermer l'application
+3. Rouvrir → Doit aller sur AdminDashboardActivity
+4. Se déconnecter
+5. Se connecter en client
+6. Fermer et rouvrir → Doit aller sur ClientHomeActivity
+
+---
+
+## 🎉 Application Complète - Version 2.0 !
 
 L'application IT Companies Manager dispose maintenant de:
+
+### Système de Rôles 👥
+
+- **Admin**: Accès complet à toutes les fonctionnalités
+- **Client**: Interface simplifiée avec actions de contact
 
 ### Sécurité 🔐
 
 - Authentification SHA-256
 - Validation mot de passe fort
-- Sessions persistantes (7 jours)
-- Déconnexion sécurisée
+- Sessions persistantes avec rôle
+- Compte admin par défaut
 
-### Gestion des Données 📊
+### Interface Admin 👨‍💼
 
+- Dashboard avec statistiques
 - CRUD complet entreprises
-- Images depuis galerie
+- Export PDF
+- Gestion des paramètres
+
+### Interface Client 👤
+
+- Navigation simplifiée
+- Actions de contact rapides (📞🌐✉️)
 - Système de favoris
 - Recherche en temps réel
-
-### Interface Utilisateur 🎨
-
-- Material Design 3
-- Mode sombre/clair
-- Animations fluides
-- Splash screen animé
-- **Navigation Drawer (Sidebar)**
-
-### Fonctionnalités Avancées 🚀
-
-- Export PDF
-- Partage entreprise
-- Notifications locales
-- Pull to Refresh
-- **Page Paramètres complète**
-- **Historique des notifications**
-- **Liste des favoris dédiée**
-
-### Navigation 🧭
-
-- Sidebar accessible depuis toutes les pages principales
-- Menu hiérarchique avec sections
-- Transitions animées entre les écrans
-- Gestion du bouton retour avec drawer

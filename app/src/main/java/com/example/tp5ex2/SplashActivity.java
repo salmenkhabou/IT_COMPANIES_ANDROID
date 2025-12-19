@@ -80,8 +80,12 @@ public class SplashActivity extends AppCompatActivity {
         
         Intent intent;
         if (sessionManager.checkLogin()) {
-            // Utilisateur connecté → aller à MainActivity2
-            intent = new Intent(this, MainActivity2.class);
+            // Utilisateur connecté → rediriger selon le rôle
+            if (sessionManager.isAdmin()) {
+                intent = new Intent(this, AdminDashboardActivity.class);
+            } else {
+                intent = new Intent(this, ClientHomeActivity.class);
+            }
             intent.putExtra("username", sessionManager.getUserName());
         } else {
             // Non connecté → aller à l'écran de connexion

@@ -104,7 +104,7 @@
             <!-- Bouton Partager -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnShare"
-                style="@style/Widget.Material3.Button.TonalButton"
+                style="@style/App.Button.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -114,11 +114,11 @@
             <!-- Bouton Export PDF -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnExportPdf"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/App.Button.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Exporter en PDF 📄"
+                android:text="Exporter en PDF"
                 app:icon="@android:drawable/ic_menu_save" />
 
             <com.google.android.material.card.MaterialCardView

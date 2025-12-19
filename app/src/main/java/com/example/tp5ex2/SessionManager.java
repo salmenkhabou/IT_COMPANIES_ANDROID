@@ -14,6 +14,7 @@ public class SessionManager {
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
     private static final String KEY_USER_EMAIL = "userEmail";
     private static final String KEY_USER_NAME = "userName";
+    private static final String KEY_USER_ROLE = "userRole";
     private static final String KEY_LOGIN_TIME = "loginTime";
     private static final String KEY_THEME_MODE = "themeMode";
     private static final String KEY_NOTIFICATIONS_ENABLED = "notificationsEnabled";
@@ -40,11 +41,38 @@ public class SessionManager {
      * @param username Le nom d'utilisateur
      */
     public void createLoginSession(String email, String username) {
+        createLoginSession(email, username, UserDatabaseHelper.ROLE_CLIENT);
+    }
+
+    /**
+     * Crée une session de connexion pour l'utilisateur avec un rôle
+     * @param email L'email de l'utilisateur
+     * @param username Le nom d'utilisateur
+     * @param role Le rôle de l'utilisateur (admin ou client)
+     */
+    public void createLoginSession(String email, String username, String role) {
         editor.putBoolean(KEY_IS_LOGGED_IN, true);
         editor.putString(KEY_USER_EMAIL, email);
         editor.putString(KEY_USER_NAME, username);
+        editor.putString(KEY_USER_ROLE, role);
         editor.putLong(KEY_LOGIN_TIME, System.currentTimeMillis());
         editor.apply();
+    }
+
+    /**
+     * Récupère le rôle de l'utilisateur connecté
+     * @return Le rôle de l'utilisateur (admin ou client)
+     */
+    public String getUserRole() {
+        return sharedPreferences.getString(KEY_USER_ROLE, UserDatabaseHelper.ROLE_CLIENT);
+    }
+
+    /**
+     * Vérifie si l'utilisateur connecté est un admin
+     * @return true si admin, false sinon
+     */
+    public boolean isAdmin() {
+        return UserDatabaseHelper.ROLE_ADMIN.equals(getUserRole());
     }
 
     /**
